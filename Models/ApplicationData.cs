@@ -10,6 +10,12 @@ namespace CDF.API.Models
 {
     public class ApplicationData
     {
+
+        public ApplicationData()
+        {
+            SiblingsList = new List<Sibling>();
+        }
+
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
@@ -17,6 +23,14 @@ namespace CDF.API.Models
         [BsonElement("userEmail")]
         [JsonProperty(PropertyName = "userEmail")]
         public string UserEmail { get; set; }
+
+        [BsonElement("userPassword")]
+        [JsonProperty(PropertyName = "userPassword")]
+        public string UserPassword { get; set; }
+
+        [BsonElement("isAuthenticated")]
+        [JsonProperty(PropertyName = "isAuthenticated")]
+        public bool IsAuthenticated { get; set; }
 
         [BsonElement("userToken")]
         [JsonProperty(PropertyName = "userToken")]
@@ -52,7 +66,7 @@ namespace CDF.API.Models
 
         [BsonElement("admissionNumber")]
         [JsonProperty(PropertyName = "admissionNumber")]
-        public string admissionNumber { get; set; }
+        public string AdmissionNumber { get; set; }
 
         [BsonElement("institutionBranch")]
         [JsonProperty(PropertyName = "institutionBranch")]
@@ -132,7 +146,7 @@ namespace CDF.API.Models
 
         [BsonElement("numberOfSiblings")]
         [JsonProperty(PropertyName = "numberOfSiblings")]
-        public int numberOfSiblings { get; set; }
+        public int NumberOfSiblings { get; set; }
 
         [BsonElement("estimatedFamilyIncome")]
         [JsonProperty(PropertyName = "estimatedFamilyIncome")]
@@ -236,7 +250,7 @@ namespace CDF.API.Models
 
         [BsonElement("previousBursaryDate")]
         [JsonProperty(PropertyName = "previousBursaryDate")]
-        public DateTime previousBursaryDate { get; set; }
+        public DateTime PreviousBursaryDate { get; set; }
 
         [BsonElement("previousFinancialSupport")]
         [JsonProperty(PropertyName = "previousFinancialSupport")]
@@ -252,7 +266,7 @@ namespace CDF.API.Models
 
         [BsonElement("physicalImpairmentDetails")]
         [JsonProperty(PropertyName = "physicalImpairmentDetails")]
-        public string physicalImpairmentDetails { get; set; }
+        public string PhysicalImpairmentDetails { get; set; }
 
         [BsonElement("hasChronicIllness")]
         [JsonProperty(PropertyName = "hasChronicIllness")]
@@ -408,7 +422,7 @@ namespace CDF.API.Models
 
         [BsonElement("fileAttachments")]
         [JsonProperty(PropertyName = "fileAttachments")]
-        public object[] fileAttachments { get; set; }
+        public object[] FileAttachments { get; set; }
 
         [BsonElement("religiousLeaderApproved")]
         [JsonProperty(PropertyName = "religiousLeaderApproved")]

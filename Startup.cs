@@ -1,4 +1,6 @@
 using CDF.API.DataAccess;
+using CDF.API.Models;
+using CDF.API.Models.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -9,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
@@ -31,6 +34,14 @@ namespace CDF.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<ApplicationDatabaseSettings>(
+             Configuration.GetSection(nameof(ApplicationDatabaseSettings)));
+
+            services.AddSingleton<IApplicationDatabaseSettings>(sp =>
+              sp.GetRequiredService<IOptions<ApplicationDatabaseSettings>>().Value);
+
+            services.AddSingleton<ApplicationDatabase>();
+
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy",
@@ -39,6 +50,7 @@ namespace CDF.API
                     .AllowAnyMethod()
                     .AllowAnyHeader());
             });
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
@@ -55,12 +67,15 @@ namespace CDF.API
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"])),
                 ClockSkew = TimeSpan.Zero
             };
+
             services.AddCors();
         });
+
             services.AddAuthorization(Configuration =>
             {
                 Configuration.AddPolicy(Policies.User, Policies.UserPolicy());
             });
+
             services.AddResponseCompression(options =>
             {
                 options.Providers.Add<BrotliCompressionProvider>();
@@ -69,7 +84,9 @@ namespace CDF.API
                     ResponseCompressionDefaults.MimeTypes.Concat(
                         new[] { "image/svg+xml" });
             });
+
             services.AddControllers();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CDF.API", Version = "v1" });
