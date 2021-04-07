@@ -184,9 +184,8 @@ namespace CDF.API.DataAccess
 
                 await applicationData.UpdateOneAsync(filter, update);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine(ex.Message);
                 return false;
             }
 

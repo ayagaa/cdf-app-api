@@ -4,6 +4,7 @@ using CDF.API.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,11 +16,15 @@ namespace CDF.API.Controllers
     [ApiController]
     public class PostApplicationController : ControllerBase
     {
+        private readonly IConfiguration Configuration;
+        private readonly AuthMessageSender authMessageSender;
         private readonly ApplicationDatabase applicationService;
 
-        public PostApplicationController(ApplicationDatabase applicationDatabase)
+        public PostApplicationController(ApplicationDatabase applicationDatabase, IConfiguration configuration)
         {
             applicationService = applicationDatabase;
+            Configuration = configuration;
+            authMessageSender = new AuthMessageSender(Configuration);
         }
 
         [AllowAnonymous]
@@ -27,15 +32,11 @@ namespace CDF.API.Controllers
         public async Task<ActionResult<string>> PostApplication()
         {
             var userApplicationString = HttpUtils.GetRequestBody(Request.Body);
-            Console.WriteLine(userApplicationString);
             if(!string.IsNullOrEmpty(userApplicationString))
             {
-                Console.WriteLine("Is not Null String");
                 var userApplication = JsonUtils.ParseApiData<ApplicationData>(userApplicationString);
-                Console.WriteLine("Completed Parsing");
                 if(userApplication != null && userApplication.IsAuthenticated && !string.IsNullOrEmpty(userApplication.UserEmail))
                 {
-                    Console.WriteLine("Passed validity tests");
                     var hasUpdated = await applicationService.Update(userApplication.UserToken, userApplication);
 
                     if(hasUpdated)
@@ -46,6 +47,35 @@ namespace CDF.API.Controllers
             }
 
             return NotFound();
+        }
+
+
+        [AllowAnonymous]
+        [HttpPost("/religion")]
+        public async Task<ActionResult<string>> ReligiousVerifier()
+        {
+            return Ok();
+        }
+
+        [AllowAnonymous]
+        [HttpPost("/admin")]
+        public async Task<ActionResult<string>> AdministratorVerifier()
+        {
+            return Ok();
+        }
+
+        [AllowAnonymous]
+        [HttpPost("/pollingstation")]
+        public async Task<ActionResult<string>> PollingStationApproval()
+        {
+            return Ok();
+        }
+
+        [AllowAnonymous]
+        [HttpPost("/cdfcommittee")]
+        public async Task<ActionResult<string>> CommitteeApproval()
+        {
+            return Ok();
         }
     }
 }

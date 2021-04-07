@@ -3,6 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,7 +11,6 @@ namespace CDF.API.Models
 {
     public class ApplicationData
     {
-
         public ApplicationData()
         {
             SiblingsList = new List<Sibling>();
@@ -50,6 +50,7 @@ namespace CDF.API.Models
 
         [BsonElement("dateOfBirth")]
         [JsonProperty(PropertyName = "dateOfBirth")]
+        [DefaultValue(typeof(DateTime), "01/01/1980")]
         public DateTime DateOfBirth { get; set; }
 
         [BsonElement("idNo")]
@@ -94,6 +95,7 @@ namespace CDF.API.Models
 
         [BsonElement("yearOfCompletion")]
         [JsonProperty(PropertyName = "yearOfCompletion")]
+        [DefaultValue(typeof(DateTime), "01/01/1980")]
         public DateTime yearOfCompletion { get; set; }
 
         [BsonElement("phoneNumber")]
@@ -250,6 +252,7 @@ namespace CDF.API.Models
 
         [BsonElement("previousBursaryDate")]
         [JsonProperty(PropertyName = "previousBursaryDate")]
+        [DefaultValue(typeof(DateTime), "01/01/1980")]
         public DateTime PreviousBursaryDate { get; set; }
 
         [BsonElement("previousFinancialSupport")]
