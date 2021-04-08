@@ -32,6 +32,26 @@ namespace CDF.API.Models
         [JsonProperty(PropertyName = "isAuthenticated")]
         public bool IsAuthenticated { get; set; }
 
+        [BsonElement("submitted")]
+        [JsonProperty(PropertyName = "submitted")]
+        public bool Submitted { get; set; }
+
+        [BsonElement("verification1")]
+        [JsonProperty(PropertyName = "verification1")]
+        public bool Verification1 { get; set; } = false;
+
+        [BsonElement("verification2")]
+        [JsonProperty(PropertyName = "verification2")]
+        public bool Verfication2 { get; set; } = false;
+
+        [BsonElement("approval1")]
+        [JsonProperty(PropertyName = "approval1")]
+        public bool Approval1 { get; set; } = false;
+
+        [BsonElement("approval2")]
+        [JsonProperty(PropertyName = "approval2")]
+        public bool Approval2 { get; set; } = false;
+
         [BsonElement("userToken")]
         [JsonProperty(PropertyName = "userToken")]
         public string UserToken { get; set; }

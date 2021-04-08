@@ -28,6 +28,20 @@ namespace CDF.API.Controllers
         }
 
         [AllowAnonymous]
+        [HttpGet("/auth-form")]
+        public async Task<ActionResult<string>> GetApplication([FromQuery]
+                                                                string ApplicationId)
+        {
+            if(!string.IsNullOrEmpty(ApplicationId))
+            {
+                var userApplication = await applicationService.Get(ApplicationId);
+                return Ok(JsonUtils.SerializeResults<ApplicationData>(userApplication));
+            }
+
+            return Ok();
+        }
+
+        [AllowAnonymous]
         [HttpPost()]
         public async Task<ActionResult<string>> PostApplication()
         {
@@ -37,9 +51,15 @@ namespace CDF.API.Controllers
                 var userApplication = JsonUtils.ParseApiData<ApplicationData>(userApplicationString);
                 if(userApplication != null && userApplication.IsAuthenticated && !string.IsNullOrEmpty(userApplication.UserEmail))
                 {
+                    userApplication.Submitted = userApplication.Step == 8;
                     var hasUpdated = await applicationService.Update(userApplication.UserToken, userApplication);
-
-                    if(hasUpdated)
+                    AuthMessageSender authMessageSender = new AuthMessageSender(Configuration);
+                    await authMessageSender.SendEmailAsync(userApplication.UserEmail, "Application Submitted", "Your bursary application has been submitted.");
+                    string religiousLeaderUrl = string.Format("http://localhost:3000/auth-form?id={0}&level={1}", userApplication.UserToken, "verification1");
+                    string chiefUrl = string.Format("http://localhost:3000/auth-form?id={0}&level={1}", userApplication.UserToken, "verification2");
+                    await authMessageSender.SendEmailAsync(userApplication.ReligiousLeaderEmail, "Application to Verify - Religious Leader for "+ userApplication?.Name, religiousLeaderUrl);
+                    await authMessageSender.SendEmailAsync(userApplication.ChiefEmail, "Application to Verify - Chief/ Sub-chief" + userApplication?.Name, chiefUrl);
+                    if (hasUpdated)
                     {
                         return Ok();
                     }
@@ -54,7 +74,28 @@ namespace CDF.API.Controllers
         [HttpPost("/religion")]
         public async Task<ActionResult<string>> ReligiousVerifier()
         {
-            return Ok();
+            var userApplicationString = HttpUtils.GetRequestBody(Request.Body);
+            if (!string.IsNullOrEmpty(userApplicationString))
+            {
+                var userApplication = JsonUtils.ParseApiData<ApplicationData>(userApplicationString);
+                if (userApplication != null && userApplication.IsAuthenticated 
+                    && userApplication.Submitted
+                    && !string.IsNullOrEmpty(userApplication.UserEmail))
+                {
+                    var hasUpdated = await applicationService.Update(userApplication.UserToken, userApplication);
+                    if (userApplication.Verification1)
+                    {
+                        AuthMessageSender authMessageSender = new AuthMessageSender(Configuration);
+                        await authMessageSender.SendEmailAsync(userApplication.UserEmail, "Application Submitted", "Your bursary application has been submitted.");
+                    }
+                    if (hasUpdated)
+                    {
+                        return Ok();
+                    }
+                }
+            }
+
+            return NotFound();
         }
 
         [AllowAnonymous]

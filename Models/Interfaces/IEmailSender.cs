@@ -7,6 +7,6 @@ namespace CDF.API.Models.Interfaces
 {
     public interface IEmailSender
     {
-        Task SendEmailAsync(ApplicationData application, string subject, string message);
+        Task SendEmailAsync(string destinationEmail, string subject, string message);
     }
 }
